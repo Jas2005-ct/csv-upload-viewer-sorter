@@ -1,0 +1,41 @@
+{% load static %}
+{% static "images" as baseUrl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/h.css' %}">
+    <title>CSV Data</title>
+</head>
+<body>
+
+    <div>
+        {{ table|safe }}
+    </div>
+
+    <script>
+        function sortTable(event) {
+            let header = event.target;
+            let table = header.closest("table");
+            let columnIndex = Array.from(header.parentNode.children).indexOf(header);
+            let isAscending = header.getAttribute("data-sort") === "asc";
+            let rows = Array.from(table.rows).slice(1);
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.cells[columnIndex].innerText.trim();
+                let cellB = rowB.cells[columnIndex].innerText.trim();
+                let numA = parseFloat(cellA);
+                let numB = parseFloat(cellB);
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return isAscending ? numA - numB : numB - numA;
+                } else {
+                    return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                }
+            });
+            rows.forEach(row => table.appendChild(row));
+            header.setAttribute("data-sort", isAscending ? "desc" : "asc");
+        }
+    </script>
+
+</body>
+</html>
